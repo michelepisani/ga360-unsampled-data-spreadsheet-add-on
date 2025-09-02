@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <base target="_top">
+      <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css" />
+      <style>
+
+         .success { color: #4BB543; }
+         .error { color: #CC0000; }
+         .full { width: 100%; }
+         .row { margin-bottom: 10px; }
+         section { padding-bottom: 12px; }
+         h2 { margin: 0 0 12px !important;color: #000 !important;font-weight: bold !important;font-size: 14px !important; }
+         .help { padding-top: 0px;color: #666;font-size: 11px;line-height: 1.3; }
+         
+         .select2-container { position: relative;display: inline-block;zoom: 1;vertical-align: top; }
+         .subtext { font-size: 11px;text-align: right; }
+         .select2-container--default.select2-container--focus .select2-selection--multiple { border: solid #aaa 1px !important; }
+         .select2-container--default .select2-selection--multiple { border-radius: 0px !important; }
+         .select2-container .select2-selection--multiple .select2-selection__rendered { display: block !important; }
+         .select2-container .select2-search--inline .select2-search__field { margin-top: 3px !important; }
+         span.select2.select2-container.select2-container--default { width: 100% !important; }
+
+      </style>
+      <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+      <link rel="stylesheet" href="/resources/demos/style.css">
+      <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+      <link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+      <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
+      <script>
+
+        var arr_accounts_properties_views_360 = [];
+        var arr_accounts_properties_views_360_len = 0;
+        var select_options_account = '';
+        var select_options_property = '';
+        var select_options_view = '';
+        
+        var arr_metadata_list = [];
+      </script>
+      
+      <!-- Global site tag (gtag.js) - Google Analytics -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=UA-9947489-41"></script>
+      <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      
+      gtag('config', 'UA-9947489-41', { 'anonymize_ip': true, 'page_title' : 'sidebar report new', 'page_path': '/sidebar-report-new', 'cookie_flags': 'samesite=none;secure' });
+      </script>
+      
+   </head>
+   <body>
+      <form>
+      <div class="sidebar">
+         <section>
+            <h2>1) Name your unsampled report</h2>
+            <div class="row form-group">
+               <label for="report_name">Name</label>
+               <input type="text" name="report_name" value="" id="report_name" class="full" />
+            </div>
+         </section>
+
+         <section>
+            <h2>2) Select a view</h2>
+            <div class="row form-group">
+               <label for="select_account">Account</label>
+               <select id="select_account" name="select_account" class="full" onchange="showPropertiesByAccountId(this.value);"></select>
+            </div>
+         
+            <div class="row form-group">
+               <label for="select_property">Property</label>
+               <select id="select_property" name="select_property" class="full" onchange="showViewsByPropertyId(this.value);"></select>
+            </div>
+            
+            <div class="row form-group">
+               <label for="select_view">View</label>
+               <select id="select_view" name="select_view" class="full"></select>
+            </div>
+         </section>
+
+         <section>
+            <h2>3) Report configuration options</h2>       
+            <div class="row form-group">
+               <label for="report_metrics">Metrics</label>
+               <div class="select2-container select2-container-multi full">
+                  <select class="js-example-basic-multiple full" name="report_metrics[]" id="report_metrics" multiple="multiple" data-placeholder="Search metrics..."></select>                  
+               </div>
+               <div class="subtext"><a href="https://developers.google.com/analytics/devguides/reporting/core/dimsmets" target="_blank">Metrics Reference</a></div>
+            </div>
+            
+            <div class="row form-group">
+               <label for="report_dimensions">Dimensions</label>
+               <div class="select2-container select2-container-multi full">
+                  <select class="js-example-basic-multiple full" name="report_dimensions[]" id="report_dimensions" multiple="multiple" data-placeholder="Search dimensions..."></select>                  
+               </div>
+               <div class="subtext"><a href="https://developers.google.com/analytics/devguides/reporting/core/dimsmets" target="_blank">Dimensions Reference</a></div>
+            </div>
+            
+            <div class="row form-group">
+               <label for="report_segments">Segments</label>
+               <div class="select2-container select2-container-multi full">
+                  <select class="js-example-basic-multiple full" name="report_segments[]" id="report_segments" multiple="multiple" data-placeholder="Search segments..."></select>                  
+               </div>
+               <div class="subtext"><a href="https://developers.google.com/analytics/devguides/reporting/core/v3/segments-feature-reference" target="_blank">Segments Reference</a></div>
+            </div>
+         </section>
+
+         <div class="block">&nbsp;</div>
+
+         <section>            
+            <div class="row form-group">
+               <button onclick="createReport()" type="button" id="create_report" class="action">Create Report</button>
+               <button onclick="closeSidebar()" type="button">Cancel</button>
+            </div>
+            
+            <p class="help">If you have questions about using this add-on, check out the <a href="https://www.analyticstraps.com/google-analytics-unsampled-reports-spreadsheet-add-on/" target="_blank">developer guide</a> for more detailed instructions.</p>
+         </section>
+
+         </div>
+         <div class="sidebar bottom">
+            <span class="gray">Michele Pisani &copy; AnalyticsTraps.com</span>
+         </div>
+         
+         <input type="hidden" name="report_m" id="report_m" value="" />
+         <input type="hidden" name="report_d" id="report_d" value="" />
+         <input type="hidden" name="report_s" id="report_s" value="" />
+         
+      </form>
+   </body>
+</html>
+
+<script>
+
+var select_account_ref = document.getElementById("select_account");
+var select_property_ref = document.getElementById("select_property");
+var select_view_ref = document.getElementById("select_view");
+var report_metrics_ref = document.getElementById("report_metrics");
+var report_dimensions_ref = document.getElementById("report_dimensions");
+var report_segments_ref = document.getElementById("report_segments");
+var btn_create_report_ref = document.getElementById("create_report");
+
+var report_m_ref = document.getElementById("report_m");
+var report_d_ref = document.getElementById("report_d");
+var report_s_ref = document.getElementById("report_s");
+
+function onFailure(error) {
+    google.script.run.browserMsgBox(error.message);
+}
+
+function closeSidebar() {
+    google.script.host.close();
+}
+
+function createReport() {
+    btn_create_report_ref.disabled = true;
+    btn_create_report_ref.value="Creating...";
+    
+    var metric_selected_string = '';
+    var metric_selected_len = $('#report_metrics').find(':selected').length;
+    for (var ms=0;ms<metric_selected_len;ms++) {
+      metric_selected_string = metric_selected_string + $('#report_metrics').find(':selected')[ms].value + ',';
+    }
+    metric_selected_string = metric_selected_string.slice(0, -1);
+    report_m_ref.value = metric_selected_string;
+    
+    var dimension_selected_string = '';
+    var dimension_selected_len = $('#report_dimensions').find(':selected').length;
+    for (var ds=0;ds<dimension_selected_len;ds++) {
+      dimension_selected_string = dimension_selected_string + $('#report_dimensions').find(':selected')[ds].value + ',';
+    }
+    dimension_selected_string = dimension_selected_string.slice(0, -1);
+    report_d_ref.value = dimension_selected_string;    
+    
+    var segment_selected_string = '';
+    var segment_selected_len = $('#report_segments').find(':selected').length;
+    for (var sgs=0;sgs<segment_selected_len;sgs++) {
+      segment_selected_string = segment_selected_string + $('#report_segments').find(':selected')[sgs].value + ',';
+    }
+    segment_selected_string = segment_selected_string.slice(0, -1);
+    report_s_ref.value = segment_selected_string;
+    
+    google.script.run.withFailureHandler(onFailure).withSuccessHandler(onSuccessGenerateReportConfiguration).generaReportConfiguration(document.forms[0]);
+}
+
+function onSuccessGenerateReportConfiguration(result) {
+  closeSidebar();
+}
+
+function onSuccessStartAccount(result) {
+    if (result.length == 0) {
+        google.script.run.browserMsgBox('Warning! There are no Google Analytics 360 Accounts linked to the current user account.');
+    }
+    arr_accounts_properties_views_360 = result;
+    arr_accounts_properties_views_360_len = result.length;
+    var account_processed_id = '';
+    var first_account_processed_id = '';
+    var curr_account_processed_id = '';
+    for (var i=0; i<arr_accounts_properties_views_360_len; i++) {
+      curr_account_processed_id = arr_accounts_properties_views_360[i][0]+'';
+      if (account_processed_id+'' != curr_account_processed_id) {
+        if (account_processed_id == '') { first_account_processed_id = curr_account_processed_id; }
+        account_processed_id = curr_account_processed_id;
+        select_options_account = select_options_account + '<option value="' + account_processed_id + '">' + arr_accounts_properties_views_360[i][1] + '</option>';
+      }
+    }
+    select_account_ref.innerHTML = select_options_account;
+    showPropertiesByAccountId(first_account_processed_id);
+}
+
+function showPropertiesByAccountId(accId) {
+    select_options_property = '';
+    var property_processed_id = '';
+    var first_property_processed_id = '';
+    var curr_account_processed_id = '';
+    var curr_property_processed_id = '';
+    for (var i=0; i<arr_accounts_properties_views_360_len; i++) {
+      curr_account_processed_id = arr_accounts_properties_views_360[i][0]+'';
+      if (curr_account_processed_id == accId) {
+        curr_property_processed_id = arr_accounts_properties_views_360[i][2]+'';
+        if (property_processed_id+'' != curr_property_processed_id) {
+          if (property_processed_id == '') { first_property_processed_id = curr_property_processed_id; }
+          property_processed_id = curr_property_processed_id;
+          select_options_property = select_options_property + '<option value="' + property_processed_id + '">' + arr_accounts_properties_views_360[i][3] + '</option>';
+        }
+        if (curr_account_processed_id != accId) { break };
+      }
+    }
+    removeOptions(select_view_ref);
+    select_property_ref.innerHTML = select_options_property;
+    showViewsByPropertyId(first_property_processed_id);
+}
+
+function showViewsByPropertyId(propId) {
+    select_options_view = '';
+    var view_processed_id = '';
+    var curr_property_processed_id = '';
+    for (var i=0; i<arr_accounts_properties_views_360_len; i++) {
+      curr_property_processed_id = arr_accounts_properties_views_360[i][2]+'';
+      if (curr_property_processed_id == propId) {
+        view_processed_id = arr_accounts_properties_views_360[i][4];
+        select_options_view = select_options_view + '<option value="' + view_processed_id + '">' + arr_accounts_properties_views_360[i][5] + '</option>';
+        if (curr_property_processed_id != propId) { break };
+      }
+    }
+    removeOptions(select_view_ref);
+    select_view_ref.innerHTML = select_options_view;
+}
+
+function removeOptions(selId) {
+    selId.options.length = 0;
+}
+
+function onSuccessStartMetadata(result) {
+    arr_metadata_list = result;
+    
+    var arr_metadata_list_metrics = arr_metadata_list.filter(function (typ) {
+      return typ[1] == 'METRIC';
+    });
+    
+    var arr_metadata_list_dimensions = arr_metadata_list.filter(function (typ) {
+      return typ[1] == 'DIMENSION';
+    });
+    
+    var last_group_processed = '';
+    var curr_group_processed = '';
+    var bln_group_processed_firsttime = true;
+    var select_options_metrics = '';
+    var arr_metadata_list_metrics_len = arr_metadata_list_metrics.length;
+    for (var m=0; m<arr_metadata_list_metrics_len; m++) {
+      curr_group_processed = arr_metadata_list_metrics[m][0]+'';
+      if (curr_group_processed != last_group_processed) {
+        if (!bln_group_processed_firsttime) { select_options_metrics = select_options_metrics + '</optgroup>'; }
+        bln_group_processed_firsttime = false;
+        select_options_metrics = select_options_metrics + '<optgroup label="' + curr_group_processed + '">';
+        last_group_processed = curr_group_processed;
+      }
+      select_options_metrics = select_options_metrics + '<option value="' + arr_metadata_list_metrics[m][2] + '">' + arr_metadata_list_metrics[m][3] + '</option>';
+    }
+    select_options_metrics = select_options_metrics + '</optgroup>';
+    report_metrics_ref.innerHTML = select_options_metrics;
+
+    last_group_processed = '';
+    curr_group_processed = '';
+    bln_group_processed_firsttime = true;
+    var select_options_dimensions = '';
+    var arr_metadata_list_dimensions_len = arr_metadata_list_dimensions.length;
+    for (var m=0; m<arr_metadata_list_dimensions_len; m++) {
+      curr_group_processed = arr_metadata_list_dimensions[m][0]+'';
+      if (curr_group_processed != last_group_processed) {
+        if (!bln_group_processed_firsttime) { select_options_dimensions = select_options_dimensions + '</optgroup>'; }
+        bln_group_processed_firsttime = false;
+        select_options_dimensions = select_options_dimensions + '<optgroup label="' + curr_group_processed + '">';
+        last_group_processed = curr_group_processed;
+      }
+      select_options_dimensions = select_options_dimensions + '<option value="' + arr_metadata_list_dimensions[m][2] + '">' + arr_metadata_list_dimensions[m][3] + '</option>';
+    }
+    select_options_dimensions = select_options_dimensions + '</optgroup>';
+    report_dimensions_ref.innerHTML = select_options_dimensions;
+
+}
+
+function onSuccessStartSegments(result) {
+    arr_segments_list = result;
+
+    var last_group_processed = '';
+    var curr_group_processed = '';
+    var curr_group_processed_appoggio = ''; // BUILT_IN -> Built in
+    var bln_group_processed_firsttime = true;
+    var select_options_segments = '';
+    var arr_segments_list_len = arr_segments_list.length;
+    for (var s=0; s<arr_segments_list_len; s++) {
+      curr_group_processed = arr_segments_list[s][0]+'';
+      if (curr_group_processed != last_group_processed) {
+        if (!bln_group_processed_firsttime) { select_options_segments = select_options_segments + '</optgroup>'; }
+        bln_group_processed_firsttime = false;
+        var curr_group_processed_appoggio = curr_group_processed.toLowerCase();
+        select_options_segments = select_options_segments + '<optgroup label="' + (curr_group_processed_appoggio.charAt(0).toUpperCase() + curr_group_processed_appoggio.slice(1)).replace("_"," ") + '">';
+        last_group_processed = curr_group_processed;
+      }
+      select_options_segments = select_options_segments + '<option value="' + arr_segments_list[s][1] + '">' + arr_segments_list[s][2] + '</option>';
+    }
+    select_options_segments = select_options_segments + '</optgroup>';
+    report_segments_ref.innerHTML = select_options_segments;
+}
+
+
+$(document).ready(function() {
+    $('.js-example-basic-multiple').select2();        
+});
+
+
+google.script.run.withFailureHandler(onFailure).withSuccessHandler(onSuccessStartAccount).get360();
+google.script.run.withFailureHandler(onFailure).withSuccessHandler(onSuccessStartMetadata).getMetadata();
+google.script.run.withFailureHandler(onFailure).withSuccessHandler(onSuccessStartSegments).getSegments();
+
+</script>
